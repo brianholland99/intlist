@@ -2,13 +2,14 @@
 // The use of this source code is governed by an MIT license
 // that can be found in the LICENSE file.
 
-package intlist
+package intlist_test
 
 import (
 	"errors"
 	"strconv"
 	"testing"
 
+	"github.com/brianholland99/intlist"
 	"github.com/google/go-cmp/cmp"
 )
 
@@ -36,7 +37,7 @@ var parseTests = []parseTest{
 // This tests Parse and indirectly tests most of the Iterator code.
 func TestParse(t *testing.T) {
 	for _, test := range parseTests {
-		out, err := Parse(test.in)
+		out, err := intlist.Parse(test.in)
 		if !cmp.Equal(out, test.out) || !errors.Is(err, test.err) {
 			t.Errorf("Parse(%q) = (%v), (%v) -- wanted (%v), (%v)",
 				test.in, out, err, test.out, test.err)
@@ -48,7 +49,7 @@ func TestParse(t *testing.T) {
 // by callers and also the proper return of ErrDone by Next().
 
 func TestUseOfBadIterator(t *testing.T) {
-	it := NewIterator("2.3") // Non-int error so Iterator is invalid.
+	it := intlist.NewIterator("2.3") // Non-int error so Iterator is invalid.
 	// Ignore error to verify that value
 	defer func() {
 		if err := recover(); err == nil {
@@ -65,10 +66,10 @@ func TestUseOfBadIterator(t *testing.T) {
 }
 
 func TestUseOfNextWithErrDone(t *testing.T) {
-	it := NewIterator("") // Empty list
+	it := intlist.NewIterator("") // Empty list
 	// First check that ErrDone is returned
 	_, err := it.Next()
-	if err != ErrDone {
+	if err != intlist.ErrDone {
 		t.Errorf("ErrDone not returned on empty list")
 	}
 	// Ignore error to see if next call to Next() panics as expected.
